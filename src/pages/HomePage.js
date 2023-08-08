@@ -3,7 +3,8 @@ import Header from '../components/Header'
 import Message from '../components/Message'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import {useCollection} from 'react-firebase-hooks/firestore'
 
 function HomePage() {
   const [input,setInput] = useState("");
@@ -20,6 +21,9 @@ function HomePage() {
     .catch((err) => alert(err.message));
   };
 
+  const [messages, loading] = useCollection(
+    query(collection(db ,'chat'), orderBy("time","asc"))
+    );
   return (
     <div>
       <Header/>
@@ -27,7 +31,17 @@ function HomePage() {
       <div>
         {/* Messages */}
         <div className='max-w-2xl mx-auto mt-5'>
-          <Message/>
+          { messages?.docs?.map(
+            (message) => (
+            <Message
+            key={message.id} 
+            sender={message.data().sender} 
+            message={message.data().message} 
+            time={message?.data()?.time?.toDate().getTime()}
+            
+            />
+            ))
+            }
         </div>
         {/* İnput */}
         <div className="fixed bottom-0 flex items-center justify-between w-full p-5">
