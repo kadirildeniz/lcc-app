@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Header from '../components/Header'
 import Message from '../components/Message'
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -9,6 +9,7 @@ import {useCollection} from 'react-firebase-hooks/firestore'
 function HomePage() {
   const [input,setInput] = useState("");
   const [user] = useAuthState(auth);
+  const lastMessageDiv = useRef(null)
 
   const sendMessage = () => {
     addDoc(collection(db, "chat"),{
@@ -16,7 +17,8 @@ function HomePage() {
         message: input,
         time: serverTimestamp(),
     }).then(() => {
-      setInput("")
+      setInput("");
+      scrollToBottom()
     })
     .catch((err) => alert(err.message));
   };
@@ -24,13 +26,19 @@ function HomePage() {
   const [messages, loading] = useCollection(
     query(collection(db ,'chat'), orderBy("time","asc"))
     );
+
+  const scrollToBottom = () => {
+    lastMessageDiv.current.scrollIntoView({
+      behaviour:"smooth"
+    })
+  }  
   return (
     <div>
       <Header/>
       {/* Body */}
       <div>
         {/* Messages */}
-        <div className='max-w-2xl mx-auto mt-5'>
+        <div className='max-w-2xl mx-auto mt-5 ml-5 mr-5'>
           { messages?.docs?.map(
             (message) => (
             <Message
@@ -42,6 +50,7 @@ function HomePage() {
             />
             ))
             }
+            <div ref={lastMessageDiv} className='mb-[100px]'/>
         </div>
         {/* İnput */}
         <div className="fixed bottom-0 flex items-center justify-between w-full p-5">
