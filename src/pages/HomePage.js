@@ -40,8 +40,9 @@ function HomePage() {
         className="transition-all duration-500 border border-gray-300 flex-1 mr-4 p-2 outline-none bg-gray-200 focus:bg-gray-100" />
         
         <button 
+        disabled={!input}
         onClick={sendMessage}
-        className="bg-gray-700 pl-4 pr-4 p-2 text-white"
+        className="bg-gray-700 pl-4 pr-4 p-2 text-white transition-all duration-500 hover:bg-gray-800 disabled:cursor-not-allowed	"
         >
           Send
           </button>
